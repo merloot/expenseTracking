@@ -8,6 +8,7 @@ use yii\console\Controller;
 
 class TestController extends Controller {
 
+    public $testArray=[];
     public function actionIndex(){
         while (true){
             try{
@@ -42,7 +43,9 @@ class TestController extends Controller {
             $content = Json::decode($response);
 
             curl_close($curl); // Close request
-            var_dump($content['document']['receipt']);
+            $this->testArray = $content['document'];
+            var_dump($this->testArray);
+//            var_dump($content['document']['receipt']);
 
 
         }catch (\Exception $exception){

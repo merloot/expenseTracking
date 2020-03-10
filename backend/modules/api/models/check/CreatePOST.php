@@ -1,5 +1,7 @@
 <?php
 
+use common\models\User;
+use common\models\Goods;
 use common\models\Check;
 use \app\modules\api\models\ApiV1Model;
 use app\modules\api\extensions\JResponse;
@@ -41,31 +43,43 @@ class CreatePOST extends ApiV1Model{
 
     public function run() {
 
-        //Не тестировал, не работает, подумать
-
-        $NALOG = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/9282000100367383/tickets/19746?fiscalSign='.$this->fiscal_sign.'&sendToEmail=no';
-
-        $data = [
-            'fiscal_drive_number'       =>$this->fiscal_drive_number,
-            'fiscal_document_number'    =>$this->fiscal_document_number,
-            'fiscal_sign'               =>$this->fiscal_sign,
-            'user_id'                   =>$this->user_id,
-
-            'company_inn'               =>$this->company_inn,
-            'shift_number'              =>$this->shift_number,
-            'request_number'            =>$this->request_number,
-            'operation_type'            =>$this->operation_type,
-            'nds10'                     =>$this->nds10,
-            'nds18'                     =>$this->nds18,
-            'amount'                    =>$this->amount,
-            'confirmed'                 =>$this->confirmed,
-            'company'                   =>$this->company,
-            'kkt_reg_id'                =>$this->kkt_reg_id,
-            'seller'                    =>$this->seller,
-        ];
+        $check = $this->sendCheck();
 
         $model = new Check();
-        $model->attributes = $data;
+        $model->fiscal_sign = $check['fiscalSign'];
+        $model->fiscal_document_number= $check['fiscalDocumentNumber'];
+        $model->fiscal_drive_number = $check['fiscalDriveNumber'];
+        $model->user_id = $this->user_id;
+        //Если чек ещё не подтвержден
+        if (){
+            $model->confirmed = false;
+            $model->save();
+        }else{
+            $model->company_inn     = $check['userInn'];
+            $model->company         = $check['user'];
+            $model->shift_number    = $check['shiftNumber'];
+            $model->request_number  = $check['requestNumber'];
+            $model->operation_type  = $check['operationType'];
+            $model->nds10           = $check['nds10'];
+            $model->nds18           = $check['nds18'];
+            $model->amount          = $check['totalSum'];
+            $model->confirmed       =true;
+            $model->kkt_reg_id      =$check['kktRegId'];
+            $model->seller          =$check['operator'];
+            $model->save();
+            foreach ($check['items'] as $item){
+                $good = new Goods();
+                $good->name = $item['name'];
+                $good->amount = $item['price'];
+                $good->check = $model->id;
+                $good->count = $item['quantity'];
+                $good->price = $item['sum'];
+                $good->save();
+            }
+        }
+
+
+        //Не тестировал, не работает, подумать
 
         if ($model->validate()){
             return JResponse::success();
@@ -75,7 +89,36 @@ class CreatePOST extends ApiV1Model{
     }
 
     public function sendCheck(){
+        try{
+            $user = User::findOne($this->user_id);
+            $basicAuth= base64_encode("$user->phone:$user->code");
+            $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/'.$this->fiscal_document_number.'/tickets/'.$this->fiscal_drive_number.'?fiscalSign='.$this->fiscal_sign.'&sendToEmail=no';
+            $headers = [
+                'Accepts: application/json',
+                'device-id: 1',
+                'device-os: 1',
+                'Authorization: Basic '.$basicAuth
+            ];
+
+            $curl = curl_init();
+            curl_setopt_array($curl,[
+                CURLOPT_URL             => $url,
+                CURLOPT_HTTPHEADER      => $headers,
+                CURLOPT_RETURNTRANSFER  => 1
+
+            ]);
+
+            $response = curl_exec($curl);
+
+            $content = Json::decode($response);
+
+            curl_close($curl); // Close request
+
+            return [$content['document']];
 
 
+        }catch (\Exception $exception){
+            var_dump($exception->getMessage());
+        }
     }
 }
