@@ -89,8 +89,4 @@ class Check extends ActiveRecord {
     public function getGoods(){
         return $this->hasMany(Goods::className(),['check_id'=>'id']);
     }
-
-    public static function getCheckByFiscalDocumentNumber($fiscalDocumentNumber){
-        return self::find()->where(['fiscal_document_number'=>$fiscalDocumentNumber])->one();
-    }
 }
