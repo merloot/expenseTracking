@@ -15,7 +15,7 @@ class TestController extends Controller {
     public function actionIndex(){
         while (true){
             try{
-                $this->many();
+                $this->cUrl();
 //                $this->cUrl();
             }catch (\Exception $exception){
                 var_dump($exception->getMessage());
@@ -27,10 +27,10 @@ class TestController extends Controller {
     public function cUrl(){
 //            $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/9282000100291177/tickets/106856?fiscalSign=1887839089&sendToEmail=no';
 
-        $fn = 9289000100230581;
-        $fp = 1920673435;
-        $i  = 93074;
-        $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/'.$fn.'/tickets/'.$i.'?fiscalSign='.$fp.'&sendToEmail=no';
+        $fn     = 9282000100291177;
+        $fp     = 111115;
+        $fs     = 3899733615;
+        $url    = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/'.$fn.'/tickets/'.$fp.'?fiscalSign='.$fs.'&sendToEmail=no';
         $headers = [
                 'device-id: 1',
                 'device-os: 1',
@@ -48,8 +48,8 @@ class TestController extends Controller {
         $response = curl_exec($curl);
 
         $model = new Check();
-        $model->fiscal_sign = $fp;
-        $model->fiscal_document_number= $i;
+        $model->fiscal_sign = $fs;
+        $model->fiscal_document_number= $fp;
         $model->fiscal_drive_number = $fn;
         $model->user_id = 3;
         if (curl_getinfo($curl)['http_code']===406){
@@ -77,11 +77,11 @@ class TestController extends Controller {
 
             foreach ($check['document']['receipt']['items'] as $item){
                 $good = new Goods();
-                $good->name     = $item['document']['receipt']['name'];
-                $good->amount   = $item['document']['receipt']['price'];
+                $good->name     = $item['name'];
+                $good->amount   = $item['price'];
                 $good->check_id = $model->id;
-                $good->count    = $item['document']['receipt']['quantity'];
-                $good->price    = $item['document']['receipt']['sum'];
+                $good->count    = (string)$item['quantity'];
+                $good->price    = $item['sum'];
                 if (!$good->save()){
                     var_dump($good->getErrors());
                 }

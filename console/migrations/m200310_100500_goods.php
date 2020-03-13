@@ -13,9 +13,10 @@ class m200310_100500_goods extends Migration
     public function safeUp()
     {
         $this->createTable('goods',[
+            'id'        =>  $this->bigPrimaryKey(),
             'name'      =>  $this->text(),
             'amount'    =>  $this->integer(),
-            'count'     =>  $this->integer(),
+            'count'     =>  $this->string(),
             'price'     =>  $this->integer(),
             'check_id'  =>  $this->integer(),
         ]);

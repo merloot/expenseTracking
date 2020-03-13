@@ -17,9 +17,9 @@ class m200310_093633_check extends Migration
             'company'               => $this->string(255),
             'company_inn'           => $this->string(255),
             'kkt_reg_id'            => $this->string(255),
-            'fiscal_drive_number'   => $this->string(64)->unique()->notNull(),
-            'fiscal_document_number'=> $this->integer(64)->unique()->notNull(),
-            'fiscal_sign'           => $this->integer(64)->unique()->notNull(),
+            'fiscal_drive_number'   => $this->bigInteger()->notNull(),
+            'fiscal_document_number'=> $this->bigInteger()->notNull(),
+            'fiscal_sign'           => $this->bigInteger()->notNull(),
             'date_time'             => $this->timestamp(),
             'seller'                => $this->string(255),
             'shift_number'          => $this->integer(64),
@@ -29,10 +29,11 @@ class m200310_093633_check extends Migration
             'nds10'                 => $this->integer(),
             'nds18'                 => $this->integer(),
             'amount'                => $this->integer(),
-            'confirmed'             => $this->boolean()->defaultValue('FALSE'),
+            'confirmed'             => $this->boolean(),
 
         ]);
 
+//        $this->addPrimaryKey('check_pk','check',['fiscal_drive_number','fiscal_document_number','fiscal_sign']);
         $this->addForeignKey('CheckUser','check','user_id','user','id','CASCADE');
     }
 

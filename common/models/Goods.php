@@ -32,7 +32,8 @@ class Goods extends ActiveRecord
         return [
             [['name'], 'string'],
             [['amount', 'count', 'price', 'check_id'], 'default', 'value' => null],
-            [['amount', 'count', 'price', 'check_id'], 'integer'],
+            [['amount', 'price', 'check_id'], 'integer'],
+            ['count','string'],
             [['check_id'], 'exist', 'skipOnError' => true, 'targetClass' => Check::className(), 'targetAttribute' => ['check_id' => 'id']],
         ];
     }

@@ -47,9 +47,7 @@ class Check extends ActiveRecord {
             [['date_time'], 'safe'],
             [['confirmed'], 'boolean'],
             [['company', 'company_inn', 'kkt_reg_id', 'seller'], 'string', 'max' => 255],
-            [['fiscal_document_number'], 'unique'],
-            [['fiscal_drive_number'], 'unique'],
-            [['fiscal_sign'], 'unique'],
+            [['fiscal_document_number', 'fiscal_drive_number','fiscal_sign'], 'unique', 'targetAttribute' => ['fiscal_document_number', 'fiscal_drive_number','fiscal_sign']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
