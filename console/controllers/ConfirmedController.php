@@ -38,7 +38,7 @@ class ConfirmedController extends Controller {
         $curl = curl_init();
         curl_setopt_array($curl,[
             CURLOPT_URL             => $url,
-            CURLOPT_HTTPHEADER      =>$headers,
+            CURLOPT_HTTPHEADER      => $headers,
             CURLOPT_RETURNTRANSFER  => 1
 
         ]);
@@ -62,7 +62,7 @@ class ConfirmedController extends Controller {
             $check->kkt_reg_id      =$content['document']['receipt']['kktRegId'];
             $check->seller          =$content['document']['receipt']['operator'];
             $check->date_time       =date('Y-m-d H:i:s',strtotime($content['document']['receipt']['dateTime']));
-            if (!$check->save()){
+            if (!$check->update()){
                 var_dump($check->getErrors());
             }
             foreach ($check['document']['receipt']['items'] as $item){
