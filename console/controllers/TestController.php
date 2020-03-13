@@ -2,6 +2,8 @@
 
 namespace console\controllers;
 
+use common\models\Check;
+use common\models\Goods;
 use yii\helpers\Json;
 use yii\console\Controller;
 
@@ -16,40 +18,72 @@ class TestController extends Controller {
             }catch (\Exception $exception){
                 var_dump($exception->getMessage());
             }
-            sleep(60);
+            sleep(5);
         }
     }
 
     public function cUrl(){
-        try{
-            $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/9282000100291177/tickets/106856?fiscalSign=1887839089&sendToEmail=no';
-            $headers = [
-                'Accepts: application/json',
+//            $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/9282000100291177/tickets/106856?fiscalSign=1887839089&sendToEmail=no';
+
+        $fn = 9289000100230581;
+        $fp = 1920673435;
+        $i  = 93074;
+        $url = 'https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/'.$fn.'/tickets/'.$i.'?fiscalSign='.$fp.'&sendToEmail=no';
+        $headers = [
                 'device-id: 1',
                 'device-os: 1',
                 'Authorization: Basic Kzc5NTI4MDM3OTgyOjIxMjMyNA=='
             ];
 
-            $curl = curl_init();
-            curl_setopt_array($curl,[
+        $curl = curl_init();
+        curl_setopt_array($curl,[
                 CURLOPT_URL             => $url,
                 CURLOPT_HTTPHEADER      =>$headers,
                 CURLOPT_RETURNTRANSFER  => 1
 
             ]);
 
-            $response = curl_exec($curl);
+        $response = curl_exec($curl);
 
-            $content = Json::decode($response);
+        $model = new Check();
+        $model->fiscal_sign = $fp;
+        $model->fiscal_document_number= $i;
+        $model->fiscal_drive_number = $fn;
+        $model->user_id = 3;
+        if (curl_getinfo($curl)['http_code']===406){
+            var_dump(1);
+            $model->confirmed = false;
+            $model->save();
+        }else{
+            $check = Json::decode($response);
 
-            curl_close($curl); // Close request
-            $this->testArray = $content['document'];
-            var_dump($this->testArray);
-//            var_dump($content['document']['receipt']);
+            $model->company_inn     = $check['document']['receipt']['userInn'];
+            $model->company         = $check['document']['receipt']['user'];
+            $model->shift_number    = $check['document']['receipt']['shiftNumber'];
+            $model->request_number  = $check['document']['receipt']['requestNumber'];
+            $model->operation_type  = $check['document']['receipt']['operationType'];
+            $model->nds10           = $check['document']['receipt']['nds10'];
+            $model->nds18           = $check['document']['receipt']['nds18'];
+            $model->amount          = $check['document']['receipt']['totalSum'];
+            $model->confirmed       =true;
+            $model->kkt_reg_id      =$check['document']['receipt']['kktRegId'];
+            $model->seller          =$check['document']['receipt']['operator'];
+            $model->date_time       =date('Y-m-d H:i:s',strtotime($check['document']['receipt']['dateTime']));
+            if (!$model->save()){
+                var_dump($model->getErrors());
+            }
 
-
-        }catch (\Exception $exception){
-            var_dump($exception->getMessage());
+            foreach ($check['document']['receipt']['items'] as $item){
+                $good = new Goods();
+                $good->name     = $item['document']['receipt']['name'];
+                $good->amount   = $item['document']['receipt']['price'];
+                $good->check_id = $model->id;
+                $good->count    = $item['document']['receipt']['quantity'];
+                $good->price    = $item['document']['receipt']['sum'];
+                if (!$good->save()){
+                    var_dump($good->getErrors());
+                }
+            }
         }
     }
 }

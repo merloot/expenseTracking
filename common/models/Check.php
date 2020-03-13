@@ -42,12 +42,11 @@ class Check extends ActiveRecord {
     public function rules() {
         return [
             [['company_inn', 'shift_number', 'request_number', 'operation_type', 'user_id', 'nds10', 'nds18', 'amount'], 'default', 'value' => null],
-            [['company_inn', 'shift_number', 'request_number', 'operation_type', 'user_id', 'nds10', 'nds18', 'amount'], 'integer'],
+            [['shift_number', 'request_number', 'operation_type', 'user_id', 'nds10', 'nds18', 'amount','fiscal_drive_number', 'fiscal_document_number', 'fiscal_sign'], 'integer'],
             [['fiscal_drive_number', 'fiscal_document_number', 'fiscal_sign'], 'required'],
             [['date_time'], 'safe'],
             [['confirmed'], 'boolean'],
-            [['company', 'kkt_reg_id', 'seller'], 'string', 'max' => 255],
-            [['fiscal_drive_number', 'fiscal_document_number', 'fiscal_sign'], 'string', 'max' => 64],
+            [['company', 'company_inn', 'kkt_reg_id', 'seller'], 'string', 'max' => 255],
             [['fiscal_document_number'], 'unique'],
             [['fiscal_drive_number'], 'unique'],
             [['fiscal_sign'], 'unique'],

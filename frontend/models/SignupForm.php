@@ -14,6 +14,8 @@ class SignupForm extends Model
 //    public $email;
     public $password;
     public $phone;
+    public $code;
+
 
     /**
      * {@inheritdoc}
@@ -33,11 +35,15 @@ class SignupForm extends Model
 //            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
 
             ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            ['password', 'string', 'min' => 4],
+
+//            ['code','integer'],
+//            ['code','default', 'value' => 212324 ],
 
             ['phone', 'required'],
             ['phone', 'integer', 'min'=>10, 'max' => 10],
             ['phone', 'trim'],
+//            ['phone','default', 'value' => +79528037982],
             ['phone', 'unique', 'targetClass' => 'common\models\User', 'message' =>'This phone has already been taken'],
 
         ];
