@@ -88,7 +88,7 @@ class CreatePOST extends ApiV1Model{
             $model->seller          =$check['document']['receipt']['operator'];
             $model->date_time       =date('Y-m-d H:i:s',strtotime($check['document']['receipt']['dateTime']));
             if (!$model->save()){
-                var_dump($model->getErrors());
+                return JResponse::error($model->getErrors());
             }
 
             foreach ($check['document']['receipt']['items'] as $item){
@@ -99,7 +99,7 @@ class CreatePOST extends ApiV1Model{
                 $good->count    = $item['document']['receipt']['quantity'];
                 $good->price    = $item['document']['receipt']['sum'];
                 if (!$good->save()){
-                    var_dump($good->getErrors());
+                    return JResponse::error($good->getErrors());
                 }
             }
         }
