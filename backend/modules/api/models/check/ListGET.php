@@ -53,7 +53,7 @@ class ListGET extends ApiV1Model{
         $checks = $query->select([''])->orderBy(['date_time'])->asArray()->all();
 
         return JResponse::success([
-            'list' => $checks,
+            'list'      => $checks,
             'maxPage'   => $maxPage,
             'count'     => $count
         ]);

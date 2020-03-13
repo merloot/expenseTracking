@@ -2,10 +2,11 @@
 
 namespace console\controllers;
 
+use yii\helpers\Json;
 use common\models\Check;
 use common\models\Goods;
-use yii\helpers\Json;
 use yii\console\Controller;
+use app\modules\api\extensions\JResponse;
 
 
 class TestController extends Controller {
@@ -14,7 +15,8 @@ class TestController extends Controller {
     public function actionIndex(){
         while (true){
             try{
-                $this->cUrl();
+                $this->many();
+//                $this->cUrl();
             }catch (\Exception $exception){
                 var_dump($exception->getMessage());
             }
@@ -84,6 +86,15 @@ class TestController extends Controller {
                     var_dump($good->getErrors());
                 }
             }
+        }
+    }
+
+    public function many(){
+        $check = Check::find()->where(['id'=>3])->joinWith('goods')->asArray()->one();
+        if (!$check){
+            return var_dump('Check not find');
+        }else{
+            return var_dump($check);
         }
     }
 }
