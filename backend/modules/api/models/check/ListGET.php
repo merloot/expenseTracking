@@ -39,7 +39,7 @@ class ListGET extends ApiV1Model{
 
     function run() {
         $query = Check::find();
-        if ($this->confirmed) $query->where(['confirmed' =>$this->confirmed]);
+        if ($this->confirmed) $query->where(['confirmed' =>$this->confirmed])->andWhere(['user_id'=>$this->user_id]);
         $offset = ($this->page-1) * $this->limit;
 
         if (!empty($this->dateFrom)) $query->andWhere(['>=','date_time',$this->dateFrom]);
