@@ -53,6 +53,9 @@ return [
                 'GET profile'   => 'profile/index',
                 'PUT, PATCH profile'    => 'profile/update',
 
+                'GET check'     => 'check/index',
+                'POST check'     => 'check/create',
+
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'post'],
 //                'api/<method:[\w\-]+>/<module:[\w\-]+>/<action:[\w\-]+>' => 'api/default',
             ],
