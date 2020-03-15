@@ -53,6 +53,18 @@ class LoginForm extends Model
      *
      * @return bool whether the user is logged in successfully
      */
+
+    public function auth(){
+        if ($this->validate()){
+            $token = new Token();
+            $token->user_id = $this->getUser()->id;
+            $token->generateToken(time() + 3600 * 24);
+            return $token->save() ? $token : null;
+        } else {
+            return null;
+        }
+    }
+
     public function login()
     {
         if ($this->validate()) {

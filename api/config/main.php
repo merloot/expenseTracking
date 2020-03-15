@@ -14,19 +14,24 @@ return [
     'modules' => [],
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-api',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+                'application/xml' => 'yii\web\XmlParser',
+            ],
         ],
-        'api'   => [
-            'class' => 'app\modules\api\Module',
+        'response' => [
+            'formatters' => [
+                'json' => [
+                    'class' => 'yii\web\JsonResponseFormatter',
+                    'prettyPrint' => YII_DEBUG,
+                    'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                ],
+            ],
         ],
         'user' => [
             'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-api', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-api',
+            'enableAutoLogin' => false,
+            'enableSession' => false,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -37,14 +42,18 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
-
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                ''      => 'site/index',
+                'auth'  => 'site/login',
+
+                'GET profile'   => 'profile/index',
+                'PUT, PATCH profile'    => 'profile/update',
+
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'post'],
 //                'api/<method:[\w\-]+>/<module:[\w\-]+>/<action:[\w\-]+>' => 'api/default',
             ],
         ],
