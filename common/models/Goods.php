@@ -31,6 +31,7 @@ class Goods extends ActiveRecord
     public function rules() {
         return [
             [['name'], 'string'],
+            ['name','trim'],
             [['amount', 'count', 'price', 'check_id'], 'default', 'value' => null],
             [['amount', 'price', 'check_id'], 'integer'],
             ['count','string'],
