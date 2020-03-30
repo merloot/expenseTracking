@@ -49,14 +49,18 @@ return [
             'rules' => [
                 ''      => 'site/index',
                 'auth'  => 'site/login',
+                'sing'  => 'site/sign',
 
-                'GET profile'   => 'profile/index',
-                'PUT, PATCH profile'    => 'profile/update',
+                'GET profile'               => 'profile/index',
+                'PUT, PATCH profile'        => 'profile/update',
 
-                'GET check'     => 'check/index',
-                'POST check'     => 'check/create',
+                'GET check'                 => 'check/index',
+                'GET checks'                => 'check/all',
+                'GET check/<id:\d+>'        => 'check/one',
+                'POST check'                => 'check/create',
 
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'post'],
+
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'check'],
 //                'api/<method:[\w\-]+>/<module:[\w\-]+>/<action:[\w\-]+>' => 'api/default',
             ],
         ],

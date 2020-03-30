@@ -1,25 +1,27 @@
 <?php
 
+namespace common\models;
 
+
+use yii\base\Model;
 use common\models\Check;
-use \app\modules\api\models\ApiV1Model;
 use app\modules\api\extensions\JResponse;
 
-class ListGET extends ApiV1Model{
+class CheckList extends Model {
 
     public $page;
     public $limit;
     public $dateTo;
-    public $user_id;
+//    public $user_id;
     public $dateFrom;
     public $confirmed;
 
 
     public function rules() {
         return [
-            ['user_id','required'],
-            ['user_id','integer'],
-            ['user_id','min'=>1, 'max'=>SQL_INT_MAX],
+//            ['user_id','required'],
+//            ['user_id','integer'],
+//            ['user_id','min'=>1, 'max'=>2147483647],
 
             ['confirmed','boolean'],
 
@@ -40,7 +42,7 @@ class ListGET extends ApiV1Model{
 
     function run() {
         $query = Check::find();
-        if ($this->confirmed) $query->where(['confirmed' =>$this->confirmed]);
+        if ($this->confirmed) $query->where(['confirmed' =>$this->confirmed])->andWhere(['user_id'=>\Yii::$app->user->id]);
         $offset = ($this->page-1) * $this->limit;
 
         if (!empty($this->dateFrom)) $query->andWhere(['>=','date_time',$this->dateFrom]);
@@ -51,7 +53,7 @@ class ListGET extends ApiV1Model{
 
         $maxPage = ceil($count/ $this->limit);
 
-        $checks = $query->select(['*за'])->orderBy(['date_time'])->asArray()->all();
+        $checks = $query->select(['*'])->orderBy(['date_time'])->asArray()->all();
 
         return JResponse::success([
             'list'      => $checks,

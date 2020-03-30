@@ -41,7 +41,7 @@ class SignupForm extends Model
 //            ['code','default', 'value' => 212324 ],
 
             ['phone', 'required'],
-            ['phone', 'integer', 'min'=>10, 'max' => 10],
+            ['phone', 'string', 'min'=>11, 'max' => 100],
             ['phone', 'trim'],
 //            ['phone','default', 'value' => +79528037982],
             ['phone', 'unique', 'targetClass' => 'common\models\User', 'message' =>'This phone has already been taken'],

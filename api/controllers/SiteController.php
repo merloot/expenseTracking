@@ -2,11 +2,12 @@
 
 namespace api\controllers;
 
+use frontend\models\SignupForm;
 use Yii;
+use yii\web\Response;
 use yii\rest\Controller;
 use common\models\LoginForm;
 use yii\filters\ContentNegotiator;
-use yii\web\Response;
 
 /**
  * Site controller
@@ -30,7 +31,8 @@ class SiteController extends Controller
 
     protected function verbs(){
         return[
-            'login' =>['post'],
+            'login'=>['post'],
+            'sign'=>['post'],
         ];
     }
 
@@ -57,6 +59,15 @@ class SiteController extends Controller
         } else {
             return $model;
         }
+    }
+
+    public function actionSign(){
+        $model = new SignupForm();
+        $model->load(Yii::$app->request->bodyParams,'');
+        if ($model->signup()){
+            return $model;
+        }
+        return $model->getErrors();
     }
 
 }

@@ -21,7 +21,7 @@ class OneGET extends ApiV1Model {
     function run() {
         $check = Check::find()->where(['id'=>$this->check_id])->joinWith('goods')->asArray()->one();
         if (!$check){
-            return JResponse::error('Check not find');
+            return JResponse::error('Check not found');
         }else{
             return JResponse::success([
                 'check' => $check
